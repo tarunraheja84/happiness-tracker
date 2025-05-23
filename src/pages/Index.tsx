@@ -10,10 +10,12 @@ import HappinessReflection from '@/components/HappinessReflection';
 import MoodDetractors from '@/components/MoodDetractors';
 import InsightsDashboard from '@/components/InsightsDashboard';
 import Navigation from '@/components/Navigation';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const [activeView, setActiveView] = useState('today');
   const [todayProgress, setTodayProgress] = useState(0);
+  const navigate = useNavigate();
 
   const getCurrentGreeting = () => {
     const hour = new Date().getHours();
@@ -21,6 +23,12 @@ const Index = () => {
     if (hour < 18) return { text: 'Good Afternoon', icon: Sun };
     return { text: 'Good Evening', icon: Moon };
   };
+
+  useEffect(() => {
+    if (activeView === 'calendar') {
+      navigate('/calendar');
+    }
+  }, [activeView, navigate]);
 
   const greeting = getCurrentGreeting();
 

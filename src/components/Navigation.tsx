@@ -1,6 +1,7 @@
 
 import { Home, BarChart3, Calendar, Settings, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link, useLocation } from 'react-router-dom';
 
 interface NavigationProps {
   activeView: string;
@@ -8,12 +9,20 @@ interface NavigationProps {
 }
 
 const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
+  const location = useLocation();
+  
   const navItems = [
-    { id: 'today', label: 'Today', icon: Home },
-    { id: 'insights', label: 'Insights', icon: BarChart3 },
-    { id: 'calendar', label: 'Calendar', icon: Calendar },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'today', label: 'Today', icon: Home, path: '/' },
+    { id: 'insights', label: 'Insights', icon: BarChart3, path: '/' },
+    { id: 'calendar', label: 'Calendar', icon: Calendar, path: '/calendar' },
+    { id: 'settings', label: 'Settings', icon: Settings, path: '/' },
   ];
+
+  const handleNavigation = (item: { id: string; path: string }) => {
+    if (item.path === '/') {
+      setActiveView(item.id);
+    }
+  };
 
   return (
     <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-50">
@@ -31,22 +40,31 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
 
           {/* Navigation Items */}
           <div className="flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Button
-                key={item.id}
-                variant={activeView === item.id ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setActiveView(item.id)}
-                className={`flex items-center gap-2 ${
-                  activeView === item.id 
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white' 
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                <span className="hidden md:inline">{item.label}</span>
-              </Button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = 
+                (location.pathname === item.path && activeView === item.id) || 
+                (item.path === '/calendar' && location.pathname === '/calendar') ||
+                (item.id === activeView && location.pathname === '/');
+                
+              return (
+                <Button
+                  key={item.id}
+                  variant={isActive ? 'default' : 'ghost'}
+                  size="sm"
+                  asChild
+                  className={`flex items-center gap-2 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Link to={item.path} onClick={() => handleNavigation(item)}>
+                    <item.icon className="h-4 w-4" />
+                    <span className="hidden md:inline">{item.label}</span>
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
         </div>
       </div>
