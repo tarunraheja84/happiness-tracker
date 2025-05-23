@@ -181,13 +181,13 @@ const CalendarPage = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <span>Water Intake</span>
-                          <Badge variant={wellnessData.water ? "success" : "destructive"}>
+                          <Badge variant={wellnessData.water ? "secondary" : "destructive"}>
                             {wellnessData.water ? 'Completed' : 'Incomplete'}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between">
                           <span>Healthy Eating</span>
-                          <Badge variant={wellnessData.healthy ? "success" : "destructive"}>
+                          <Badge variant={wellnessData.healthy ? "secondary" : "destructive"}>
                             {wellnessData.healthy ? 'Completed' : 'Incomplete'}
                           </Badge>
                         </div>
