@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import Navigation from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,12 +16,6 @@ const Profile = () => {
     email: 'john.doe@example.com',
     profileImage: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=face'
   });
-
-  const [savedMoodDetractors, setSavedMoodDetractors] = useState([
-    { id: 'stress', label: 'Work Stress', frequency: 'Often' },
-    { id: 'anxiety', label: 'Social Anxiety', frequency: 'Sometimes' },
-    { id: 'overthinking', label: 'Overthinking', frequency: 'Daily' }
-  ]);
 
   const { toast } = useToast();
 
@@ -47,14 +40,6 @@ const Profile = () => {
     }
   };
 
-  const removeMoodDetractor = (id: string) => {
-    setSavedMoodDetractors(prev => prev.filter(item => item.id !== id));
-    toast({
-      title: "Mood detractor removed",
-      description: "The mood detractor has been removed from your profile.",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <Navigation activeView={activeView} setActiveView={setActiveView} />
@@ -69,11 +54,11 @@ const Profile = () => {
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Manage your personal information and mood tracking preferences
+            Manage your personal information
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="max-w-md mx-auto">
           {/* Profile Information */}
           <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
             <CardHeader>
@@ -133,68 +118,6 @@ const Profile = () => {
                 <Button onClick={handleProfileUpdate} className="w-full bg-gradient-to-r from-indigo-500 to-purple-600">
                   <Save className="h-4 w-4 mr-2" />
                   Save Profile
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Saved Mood Detractors */}
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-700">
-                <User className="h-5 w-5" />
-                Saved Mood Detractors
-              </CardTitle>
-              <p className="text-sm text-orange-600">
-                Common mood patterns you've identified
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {savedMoodDetractors.length > 0 ? (
-                <div className="space-y-3">
-                  {savedMoodDetractors.map((detractor) => (
-                    <div
-                      key={detractor.id}
-                      className="flex items-center justify-between p-3 bg-white/70 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
-                        <div>
-                          <p className="font-medium text-orange-800">{detractor.label}</p>
-                          <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700">
-                            {detractor.frequency}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeMoodDetractor(detractor.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-orange-600">
-                    No saved mood detractors yet. Start tracking your mood to build patterns.
-                  </p>
-                </div>
-              )}
-              
-              <div className="pt-4 border-t border-orange-200">
-                <p className="text-sm text-orange-600 mb-2">
-                  Mood detractors are automatically saved when you track them consistently.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="w-full border-orange-200 text-orange-700 hover:bg-orange-50"
-                  onClick={() => window.location.href = '/'}
-                >
-                  Track Mood Now
                 </Button>
               </div>
             </CardContent>
