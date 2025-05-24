@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Calendar, Heart, Sun, Moon, TrendingUp, Smile, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,12 +9,12 @@ import HappinessReflection from '@/components/HappinessReflection';
 import MoodDetractors from '@/components/MoodDetractors';
 import InsightsDashboard from '@/components/InsightsDashboard';
 import Navigation from '@/components/Navigation';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const Index = () => {
   const [activeView, setActiveView] = useState('today');
   const [todayProgress, setTodayProgress] = useState(0);
-  const navigate = useNavigate();
+  const router=useRouter();
 
   const getCurrentGreeting = () => {
     const hour = new Date().getHours();
@@ -26,9 +25,9 @@ const Index = () => {
 
   useEffect(() => {
     if (activeView === 'calendar') {
-      navigate('/calendar');
+      router.push('/calendar');
     }
-  }, [activeView, navigate]);
+  }, [activeView, router]);
 
   const greeting = getCurrentGreeting();
 
@@ -46,7 +45,7 @@ const Index = () => {
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Welcome to Serenity - your personal space for wellness, gratitude, and happiness tracking
+            Welcome to Happiness Tracker - your personal space for wellness, gratitude, and happiness tracking
           </p>
         </div>
 

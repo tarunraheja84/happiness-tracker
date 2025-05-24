@@ -1,6 +1,6 @@
-
+'use client'
 import { useState } from 'react';
-import { User, Camera, Save } from 'lucide-react';
+import { User, Camera, Save, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,15 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Navigation from '@/components/Navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useSession, signOut } from 'next-auth/react';
+import { UserSession } from '@/types/UserSession';
 
 const Profile = () => {
   const [activeView, setActiveView] = useState('profile');
-  const [profileData, setProfileData] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    profileImage: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=150&h=150&fit=crop&crop=face'
-  });
-
+  const session: UserSession | undefined = useSession().data?.user;
+  console.log("session",session);
   const { toast } = useToast();
 
   const handleProfileUpdate = () => {
@@ -26,18 +24,8 @@ const Profile = () => {
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileData(prev => ({
-          ...prev,
-          profileImage: e.target?.result as string
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -60,7 +48,7 @@ const Profile = () => {
 
         <div className="max-w-md mx-auto">
           {/* Profile Information */}
-          <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-indigo-500" />
@@ -71,25 +59,8 @@ const Profile = () => {
               {/* Profile Image */}
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={profileData.profileImage} alt="Profile" />
-                  <AvatarFallback className="text-lg">
-                    {profileData.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
+                  <AvatarImage src={session?.picture || ''} alt="Profile" />
                 </Avatar>
-                
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    id="profile-upload"
-                  />
-                  <Button variant="outline" size="sm" className="flex items-center gap-2">
-                    <Camera className="h-4 w-4" />
-                    Change Photo
-                  </Button>
-                </div>
               </div>
 
               {/* Profile Form */}
@@ -98,9 +69,9 @@ const Profile = () => {
                   <Label htmlFor="name">Full Name</Label>
                   <Input
                     id="name"
-                    value={profileData.name}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-                    className="mt-1"
+                    value={session?.name || ''}
+                    disabled
+                    className="mt-1 bg-gray-50"
                   />
                 </div>
                 
@@ -109,15 +80,22 @@ const Profile = () => {
                   <Input
                     id="email"
                     type="email"
-                    value={profileData.email}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                    className="mt-1"
+                    value={session?.email || ''}
+                    disabled
+                    className="mt-1 bg-gray-50"
                   />
                 </div>
+              </div>
 
-                <Button onClick={handleProfileUpdate} className="w-full bg-gradient-to-r from-indigo-500 to-purple-600">
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Profile
+              {/* Logout Button */}
+              <div className="pt-4 border-t">
+                <Button 
+                  variant="destructive" 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
                 </Button>
               </div>
             </CardContent>

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Heart, Save, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,7 +55,7 @@ const GratitudeJournal = () => {
         ))}
 
         <div className="flex gap-2 pt-4">
-          <Button
+          <Button 
             onClick={saveGratitude}
             className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
           >

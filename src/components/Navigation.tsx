@@ -1,7 +1,9 @@
+'use client';
 
 import { Home, BarChart3, Calendar, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface NavigationProps {
   activeView: string;
@@ -9,7 +11,8 @@ interface NavigationProps {
 }
 
 const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
-  const location = useLocation();
+  const pathname = usePathname();
+  const router = useRouter();
   
   const navItems = [
     { id: 'today', label: 'Today', icon: Home, path: '/' },
@@ -21,6 +24,9 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
   const handleNavigation = (item: { id: string; path: string }) => {
     if (item.path === '/') {
       setActiveView(item.id);
+      if (pathname !== '/') {
+        router.push('/');
+      }
     }
   };
 
@@ -33,19 +39,17 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
             <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Heart className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Serenity
-            </span>
+            <span className="text-xl font-bold">Happiness Tracker</span>
           </div>
 
           {/* Navigation Items */}
           <div className="flex items-center space-x-1">
             {navItems.map((item) => {
               const isActive = 
-                (location.pathname === item.path && activeView === item.id) || 
-                (item.path === '/calendar' && location.pathname === '/calendar') ||
-                (item.path === '/profile' && location.pathname === '/profile') ||
-                (item.id === activeView && location.pathname === '/');
+                (pathname === item.path && activeView === item.id) || 
+                (item.path === '/calendar' && pathname === '/calendar') ||
+                (item.path === '/profile' && pathname === '/profile') ||
+                (item.id === activeView && pathname === '/');
                 
               return (
                 <Button
@@ -59,7 +63,7 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
                       : 'text-gray-600 hover:text-gray-900'
                   }`}
                 >
-                  <Link to={item.path} onClick={() => handleNavigation(item)}>
+                  <Link href={item.path} onClick={() => handleNavigation(item)}>
                     <item.icon className="h-4 w-4" />
                     <span className="hidden md:inline">{item.label}</span>
                   </Link>

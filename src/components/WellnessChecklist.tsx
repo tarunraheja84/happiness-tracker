@@ -1,3 +1,4 @@
+'use client';
 
 import { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Timer, Droplets, Utensils, Moon, Activity } from 'lucide-react';
@@ -136,7 +137,7 @@ const WellnessChecklist = ({ onProgressUpdate }: WellnessChecklistProps) => {
                   {item.label}
                 </Label>
               </div>
-              
+
               {item.hasInput && (
                 <Input
                   type={item.inputType}
