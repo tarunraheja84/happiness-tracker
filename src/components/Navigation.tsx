@@ -1,5 +1,5 @@
 
-import { Home, BarChart3, Calendar, Settings, Heart } from 'lucide-react';
+import { Home, BarChart3, Calendar, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
     { id: 'today', label: 'Today', icon: Home, path: '/' },
     { id: 'insights', label: 'Insights', icon: BarChart3, path: '/' },
     { id: 'calendar', label: 'Calendar', icon: Calendar, path: '/calendar' },
-    { id: 'settings', label: 'Settings', icon: Settings, path: '/' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
   ];
 
   const handleNavigation = (item: { id: string; path: string }) => {
@@ -44,6 +44,7 @@ const Navigation = ({ activeView, setActiveView }: NavigationProps) => {
               const isActive = 
                 (location.pathname === item.path && activeView === item.id) || 
                 (item.path === '/calendar' && location.pathname === '/calendar') ||
+                (item.path === '/profile' && location.pathname === '/profile') ||
                 (item.id === activeView && location.pathname === '/');
                 
               return (
