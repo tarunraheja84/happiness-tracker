@@ -1,11 +1,12 @@
 
 import { useState } from 'react';
-import { AlertTriangle, Brain, Zap, Flame, Frown, Battery } from 'lucide-react';
+import { AlertTriangle, Brain, Zap, Flame, Frown, Battery, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 interface MoodDetractor {
   id: string;
@@ -24,6 +25,8 @@ const MoodDetractors = () => {
     { id: 'anxiety', label: 'Anxiety', icon: Frown, selected: false, severity: [3], notes: '' },
     { id: 'burnout', label: 'Burnout', icon: Battery, selected: false, severity: [3], notes: '' }
   ]);
+
+  const { toast } = useToast();
 
   const toggleDetractor = (id: string) => {
     setDetractors(items =>
@@ -47,6 +50,16 @@ const MoodDetractors = () => {
         item.id === id ? { ...item, notes } : item
       )
     );
+  };
+
+  const handleSave = () => {
+    const selectedDetractors = detractors.filter(d => d.selected);
+    console.log('Saving mood detractors:', selectedDetractors);
+    
+    toast({
+      title: "Mood detractors saved",
+      description: "Your mood tracking has been saved successfully.",
+    });
   };
 
   const selectedDetractors = detractors.filter(d => d.selected);
@@ -120,6 +133,14 @@ const MoodDetractors = () => {
                 />
               </div>
             ))}
+            
+            <Button 
+              onClick={handleSave}
+              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Save Mood Detractors
+            </Button>
           </div>
         )}
       </CardContent>
