@@ -7,7 +7,7 @@ import {
   Apple, 
   BookOpen, 
   PenTool, 
-  Stretch, 
+  Activity, 
   Users, 
   Monitor,
   AlertTriangle,
@@ -94,7 +94,7 @@ const WellnessDetails = ({ data }: { data: any }) => {
           <span>Journaling: {data.journaling ? '✓' : '✗'}</span>
         </div>
         <div className="flex items-center gap-2">
-          <Stretch className="h-4 w-4 text-orange-500" />
+          <Activity className="h-4 w-4 text-orange-500" />
           <span>Stretching: {data.stretching ? '✓' : '✗'}</span>
         </div>
         <div className="flex items-center gap-2">
