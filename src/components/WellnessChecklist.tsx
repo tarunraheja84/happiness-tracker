@@ -162,7 +162,7 @@ export default function WellnessChecklist({ onProgressUpdate }: WellnessChecklis
         meditation: parseInt(wellnessItems.find(item => item.id === 'meditation')?.inputValue || '0'),
         sleep: parseInt(wellnessItems.find(item => item.id === 'sleep')?.inputValue || '0'),
         exercise: parseInt(wellnessItems.find(item => item.id === 'exercise')?.inputValue || '0'),
-        water: parseFloat(wellnessItems.find(item => item.id === 'water')?.inputValue || '0') >= 2,
+        water: parseFloat(wellnessItems.find(item => item.id === 'water')?.inputValue || '0'),
         healthyMeals: wellnessItems.find(item => item.id === 'healthy_meals')?.completed || false,
         wakeTime: wellnessItems.find(item => item.id === 'wake_time')?.inputValue || '',
       };
