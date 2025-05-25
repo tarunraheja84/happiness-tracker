@@ -1,3 +1,25 @@
+import { Smile } from 'lucide-react';
+
+interface CalendarData {
+  date: Date;
+  rating: number;
+  notes?: string;
+}
+
+const CalendarView = ({ data }: { data: CalendarData }) => {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <Smile className="h-4 w-4 text-yellow-500" />
+        <span>Happiness Rating: {data.rating}/10</span>
+      </div>
+      {data.notes && (
+        <p className="text-sm text-gray-600">{data.notes}</p>
+      )}
+    </div>
+  );
+};
+
 const HappinessDetails = ({ data }: { data: any }) => {
   if (!data) return null;
 
