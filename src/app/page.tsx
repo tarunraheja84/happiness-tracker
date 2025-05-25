@@ -118,7 +118,7 @@ export default function Home() {
             </div>
           )}
           
-          {activeView === 'insights' && <InsightsDashboard stats={stats} loading={statsLoading} />}
+          {activeView === 'insights' && <InsightsDashboard stats={stats || undefined} loading={statsLoading} />}
         </div>
       </main>
     </div>
