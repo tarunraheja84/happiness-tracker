@@ -34,7 +34,7 @@ export async function GET() {
     let completionPercentage = 0;
     if (wellnessData && wellnessData.tasks && wellnessData.tasks.length > 0) {
       const totalTasks = wellnessData.tasks.length;
-      const completedTasks = wellnessData.tasks.filter(task => task.completed).length;
+      const completedTasks = wellnessData.tasks.filter((task:any) => task.completed).length;
       completionPercentage = Math.round((completedTasks / totalTasks) * 100);
       console.log('Total Tasks:', totalTasks, 'Completed:', completedTasks, 'Percentage:', completionPercentage); // Debug log
     } else {
