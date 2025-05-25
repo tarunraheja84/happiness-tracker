@@ -1,4 +1,19 @@
-import { Smile } from 'lucide-react';
+import { 
+  Smile, 
+  Heart, 
+  Moon, 
+  Dumbbell, 
+  Droplets, 
+  Apple, 
+  BookOpen, 
+  PenTool, 
+  Stretch, 
+  Users, 
+  Monitor,
+  AlertTriangle,
+  Flame,
+  AlertCircle
+} from 'lucide-react';
 
 interface CalendarData {
   date: Date;
