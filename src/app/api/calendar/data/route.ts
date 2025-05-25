@@ -93,7 +93,7 @@ export async function GET() {
         const date = item.date instanceof Date ? item.date : new Date(item.date);
         return {
           date: startOfDay(date),
-          moodDetractors: item.moodDetractors?.map(d => ({
+          moodDetractors: item.moodDetractors?.map((d:any) => ({
             label: d.label,
             severity: d.severity,
             notes: d.notes
