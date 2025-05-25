@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from 'next-auth/react';
-import { Heart, Moon, Dumbbell, Droplets, Apple, BookOpen, PenTool, Stretch, Users, Monitor } from 'lucide-react';
+import { Heart, Moon, Dumbbell, Droplets, Apple, BookOpen, PenTool, Users, Monitor } from 'lucide-react';
 
 interface WellnessData {
   meditation: number;
@@ -196,65 +196,6 @@ export default function Wellness() {
                 id="healthy"
                 checked={wellnessData.healthy}
                 onCheckedChange={() => handleCheckboxChange('healthy')}
-              />
-            </div>
-
-            {/* Reading */}
-            <div className="flex items-center gap-4">
-              <BookOpen className="h-5 w-5 text-purple-500" />
-              <Label htmlFor="reading" className="flex-1">Read for pleasure</Label>
-              <Checkbox
-                id="reading"
-                checked={wellnessData.reading}
-                onCheckedChange={() => handleCheckboxChange('reading')}
-              />
-            </div>
-
-            {/* Journaling */}
-            <div className="flex items-center gap-4">
-              <PenTool className="h-5 w-5 text-yellow-500" />
-              <Label htmlFor="journaling" className="flex-1">Journaled today</Label>
-              <Checkbox
-                id="journaling"
-                checked={wellnessData.journaling}
-                onCheckedChange={() => handleCheckboxChange('journaling')}
-              />
-            </div>
-
-            {/* Stretching */}
-            <div className="flex items-center gap-4">
-              <Stretch className="h-5 w-5 text-orange-500" />
-              <Label htmlFor="stretching" className="flex-1">Did stretching</Label>
-              <Checkbox
-                id="stretching"
-                checked={wellnessData.stretching}
-                onCheckedChange={() => handleCheckboxChange('stretching')}
-              />
-            </div>
-
-            {/* Social Connection */}
-            <div className="flex items-center gap-4">
-              <Users className="h-5 w-5 text-green-500" />
-              <Label htmlFor="socialConnection" className="flex-1">Social connection</Label>
-              <Checkbox
-                id="socialConnection"
-                checked={wellnessData.socialConnection}
-                onCheckedChange={() => handleCheckboxChange('socialConnection')}
-              />
-            </div>
-
-            {/* Screen Time */}
-            <div className="flex items-center gap-4">
-              <Monitor className="h-5 w-5 text-gray-500" />
-              <Label htmlFor="screenTime" className="flex-1">Screen time (hours)</Label>
-              <Input
-                id="screenTime"
-                type="number"
-                min="0"
-                max="24"
-                value={wellnessData.screenTime}
-                onChange={(e) => handleNumberChange('screenTime', e.target.value)}
-                className="w-24"
               />
             </div>
 
