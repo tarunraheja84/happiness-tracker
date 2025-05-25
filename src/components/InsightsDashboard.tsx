@@ -10,19 +10,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { format } from 'date-fns';
 
 interface Stats {
-  averageHappinessScore: number;
   totalEntries: number;
-  weeklyHappinessData: Array<{
-    date: string;
-    score: number;
-  }>;
-  moodDetractors: Array<{
-    name: string;
-    value: number;
-    color: string;
-  }>;
-  insights: string[];
-  wellnessCompletion: number;
+  averageHappinessScore: number;
+  totalGratitudeEntries: number;
+  completedWellnessActivities: number;
+  totalWellnessActivities: number;
+  moodDetractors: number;
+  averageMoodImpact: number;
 }
 
 interface InsightsDashboardProps {
