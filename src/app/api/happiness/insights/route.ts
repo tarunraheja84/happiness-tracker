@@ -46,7 +46,7 @@ export async function GET() {
     // Analyze mood detractors
     const detractorsCount = new Map<string, number>();
     happinessData.forEach(entry => {
-      entry.moodDetractors.forEach(detractor => {
+      entry.moodDetractors.forEach((detractor:any) => {
         const count = detractorsCount.get(detractor.label) || 0;
         detractorsCount.set(detractor.label, count + 1);
       });
