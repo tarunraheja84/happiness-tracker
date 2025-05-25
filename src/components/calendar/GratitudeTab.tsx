@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 
@@ -13,20 +12,16 @@ interface GratitudeTabProps {
 
 const GratitudeTab = ({ gratitudeData }: GratitudeTabProps) => {
   return (
-    <TabsContent value="gratitude" className="p-4">
-      {gratitudeData ? (
-        <div className="space-y-4">
-          <h3 className="font-medium text-lg">Gratitude Journal</h3>
-          <ul className="list-disc list-inside space-y-2">
-            {gratitudeData.items.map((item, index) => (
-              <li key={index} className="text-gray-700">{item}</li>
-            ))}
-          </ul>
-        </div>
+    <TabsContent value="gratitude" className="space-y-4">
+      <h3 className="font-medium text-lg">Gratitude Journal</h3>
+      {gratitudeData && gratitudeData.items && gratitudeData.items.length > 0 ? (
+        <ul className="list-disc list-inside space-y-2">
+          {gratitudeData.items.map((item, index) => (
+            <li key={index} className="text-gray-700">{item}</li>
+          ))}
+        </ul>
       ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No gratitude entries for this date</p>
-        </div>
+        <p className="text-gray-500 italic">No gratitude entries for this date</p>
       )}
     </TabsContent>
   );

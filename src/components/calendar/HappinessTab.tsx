@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 
 interface HappinessItem {
   date: Date;
@@ -13,40 +13,34 @@ interface HappinessTabProps {
 }
 
 const HappinessTab = ({ happinessData }: HappinessTabProps) => {
+  if (!happinessData) {
+    return (
+      <TabsContent value="happiness" className="space-y-4">
+        <h3 className="font-medium text-lg">Happiness Rating</h3>
+        <p className="text-gray-500 italic">No happiness data for this date</p>
+      </TabsContent>
+    );
+  }
+
   return (
-    <TabsContent value="happiness" className="p-4">
-      {happinessData ? (
-        <div className="space-y-4">
-          <h3 className="font-medium text-lg">Happiness Reflection</h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <span>Rating:</span>
-              <div className="flex space-x-1">
-                {[...Array(10)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      i < happinessData.rating 
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white' 
-                        : 'bg-gray-200 text-gray-400'
-                    }`}
-                  >
-                    {i + 1}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div>
-              <span className="block font-medium mb-1">Notes:</span>
-              <p className="text-gray-700 bg-white/50 p-3 rounded-md">{happinessData.notes}</p>
-            </div>
+    <TabsContent value="happiness" className="space-y-4">
+      <h3 className="font-medium text-lg">Happiness Rating</h3>
+      <div className="space-y-4">
+        <div>
+          <div className="flex justify-between mb-1">
+            <span className="text-sm font-medium">Rating</span>
+            <span className="text-sm text-gray-500">{happinessData.rating}/10</span>
           </div>
+          <Progress value={happinessData.rating} max={10} className="h-2" />
         </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-500">No happiness data for this date</p>
-        </div>
-      )}
+
+        {happinessData.notes && (
+          <div>
+            <h4 className="text-sm font-medium mb-2">Notes</h4>
+            <p className="text-gray-700 text-sm">{happinessData.notes}</p>
+          </div>
+        )}
+      </div>
     </TabsContent>
   );
 };

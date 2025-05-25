@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react';
-import { User, Camera, Save, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,15 +14,7 @@ import { UserSession } from '@/types/UserSession';
 const Profile = () => {
   const [activeView, setActiveView] = useState('profile');
   const session: UserSession | undefined = useSession().data?.user;
-  console.log("session",session);
   const { toast } = useToast();
-
-  const handleProfileUpdate = () => {
-    toast({
-      title: "Profile updated",
-      description: "Your profile information has been saved successfully.",
-    });
-  };
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/' });
@@ -47,8 +39,7 @@ const Profile = () => {
         </div>
 
         <div className="max-w-md mx-auto">
-          {/* Profile Information */}
-          <Card>
+          <Card className="border-0 shadow-lg bg-white/70 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5 text-indigo-500" />
@@ -58,8 +49,14 @@ const Profile = () => {
             <CardContent className="space-y-6">
               {/* Profile Image */}
               <div className="flex flex-col items-center space-y-4">
-                <Avatar className="w-24 h-24">
-                  <AvatarImage src={session?.picture || ''} alt="Profile" />
+                <Avatar className="w-24 h-24 border-2 border-indigo-100">
+                  <AvatarImage 
+                    src={session?.image || session?.picture || ''} 
+                    alt={session?.name || 'Profile'} 
+                  />
+                  <AvatarFallback className="bg-indigo-100 text-indigo-600 text-2xl">
+                    {session?.name?.charAt(0) || 'U'}
+                  </AvatarFallback>
                 </Avatar>
               </div>
 

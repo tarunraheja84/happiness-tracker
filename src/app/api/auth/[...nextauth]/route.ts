@@ -43,4 +43,4 @@ const handler = async (req: any, res: any) => {
   })
 }
 
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

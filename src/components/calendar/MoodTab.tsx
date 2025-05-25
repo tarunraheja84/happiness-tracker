@@ -1,57 +1,66 @@
-
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
-
-interface MoodItem {
-  date: Date;
-  issues: string[];
-  severity: number[];
-  notes: string;
-}
+import { Badge } from '@/components/ui/badge';
+import { AlertTriangle, Flame, AlertCircle } from 'lucide-react';
 
 interface MoodTabProps {
-  moodData: MoodItem | undefined;
+  moodData: {
+    date: Date;
+    moodDetractors: Array<{
+      label: string;
+      severity: number;
+      notes: string;
+    }>;
+  };
 }
 
 const MoodTab = ({ moodData }: MoodTabProps) => {
+  if (!moodData) {
+    return (
+      <TabsContent value="mood" className="space-y-4">
+        <h3 className="font-medium text-lg">Mood Detractors</h3>
+        <p className="text-gray-500 italic">No mood data for this date</p>
+      </TabsContent>
+    );
+  }
+
   return (
-    <TabsContent value="mood" className="p-4">
-      {moodData && moodData.issues.length > 0 ? (
-        <div className="space-y-4">
-          <h3 className="font-medium text-lg">Mood Detractors</h3>
+    <TabsContent value="mood" className="space-y-4">
+      <h3 className="font-medium text-lg">Mood Detractors</h3>
+      <div className="space-y-4">
+        {moodData.moodDetractors.length > 0 ? (
           <div className="space-y-4">
-            {moodData.issues.map((issue, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span>{issue}</span>
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`w-5 h-5 rounded-sm ${
-                        i < moodData.severity[index] 
-                          ? 'bg-red-500' 
-                          : 'bg-gray-200'
-                      }`}
-                    />
-                  ))}
+            {moodData.moodDetractors.map((detractor, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {detractor.label.toLowerCase().includes('stress') ? (
+                      <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    ) : detractor.label.toLowerCase().includes('anger') ? (
+                      <Flame className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4 text-yellow-500" />
+                    )}
+                    <span className="font-medium">{detractor.label}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">
+                      Severity: {detractor.severity}/10
+                    </span>
+                  </div>
                 </div>
+                {detractor.notes && (
+                  <div className="pl-6 text-sm text-gray-600">
+                    <span className="font-medium">Notes:</span> {detractor.notes}
+                  </div>
+                )}
               </div>
             ))}
-            {moodData.notes && (
-              <div>
-                <span className="block font-medium mb-1">Notes:</span>
-                <p className="text-gray-700 bg-white/50 p-3 rounded-md">{moodData.notes}</p>
-              </div>
-            )}
           </div>
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-500">
-            {moodData ? 'No mood issues reported for this date' : 'No mood data for this date'}
-          </p>
-        </div>
-      )}
+        ) : (
+          <div className="text-gray-500">No mood issues recorded</div>
+        )}
+      </div>
     </TabsContent>
   );
 };

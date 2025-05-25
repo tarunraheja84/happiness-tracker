@@ -1,5 +1,4 @@
-
-import { format } from 'date-fns';
+import { format, startOfDay, isSameDay } from 'date-fns';
 
 // Mock data types
 export interface GratitudeItem {
@@ -67,20 +66,20 @@ export const formatDateForComparison = (date: Date) => format(date, 'yyyy-MM-dd'
 
 // Function to get data for a selected date
 export const getDateData = (date: Date, data: CalendarData) => {
-  const selectedDateStr = formatDateForComparison(date);
+  const selectedDate = startOfDay(date);
   
   return {
     gratitudeData: data.gratitude.find(item => 
-      formatDateForComparison(item.date) === selectedDateStr
+      isSameDay(item.date, selectedDate)
     ),
     wellnessData: data.wellness.find(item => 
-      formatDateForComparison(item.date) === selectedDateStr
+      isSameDay(item.date, selectedDate)
     ),
     happinessData: data.happiness.find(item => 
-      formatDateForComparison(item.date) === selectedDateStr
+      isSameDay(item.date, selectedDate)
     ),
     moodData: data.mood.find(item => 
-      formatDateForComparison(item.date) === selectedDateStr
+      isSameDay(item.date, selectedDate)
     )
   };
 };
@@ -89,10 +88,10 @@ export const getDateData = (date: Date, data: CalendarData) => {
 export const getHighlightedDates = (data: CalendarData) => {
   const allDates = new Set<string>();
   
-  data.gratitude.forEach(item => allDates.add(formatDateForComparison(item.date)));
-  data.wellness.forEach(item => allDates.add(formatDateForComparison(item.date)));
-  data.happiness.forEach(item => allDates.add(formatDateForComparison(item.date)));
-  data.mood.forEach(item => allDates.add(formatDateForComparison(item.date)));
+  data.gratitude.forEach(item => allDates.add(format(startOfDay(item.date), 'yyyy-MM-dd')));
+  data.wellness.forEach(item => allDates.add(format(startOfDay(item.date), 'yyyy-MM-dd')));
+  data.happiness.forEach(item => allDates.add(format(startOfDay(item.date), 'yyyy-MM-dd')));
+  data.mood.forEach(item => allDates.add(format(startOfDay(item.date), 'yyyy-MM-dd')));
   
   return Array.from(allDates).map(dateStr => new Date(dateStr));
 };

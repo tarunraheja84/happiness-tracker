@@ -1,41 +1,113 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { TrendingUp, Calendar, Target, Award, BarChart3, PieChart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
+import { format } from 'date-fns';
 
-const InsightsDashboard = () => {
-  // Sample data - in a real app, this would come from your database
-  const happinessData = [
-    { day: 'Mon', happiness: 7, gratitude: 3, wellness: 6 },
-    { day: 'Tue', happiness: 8, gratitude: 3, wellness: 7 },
-    { day: 'Wed', happiness: 6, gratitude: 2, wellness: 5 },
-    { day: 'Thu', happiness: 9, gratitude: 3, wellness: 8 },
-    { day: 'Fri', happiness: 8, gratitude: 3, wellness: 7 },
-    { day: 'Sat', happiness: 9, gratitude: 3, wellness: 8 },
-    { day: 'Sun', happiness: 7, gratitude: 3, wellness: 6 }
-  ];
+interface Stats {
+  averageHappinessScore: number;
+  totalEntries: number;
+  weeklyHappinessData: Array<{
+    date: string;
+    score: number;
+  }>;
+  moodDetractors: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  insights: string[];
+  wellnessCompletion: number;
+}
 
-  const moodDetractorsData = [
-    { name: 'Stress', value: 35, color: '#ef4444' },
-    { name: 'Anxiety', value: 25, color: '#f97316' },
-    { name: 'Overthinking', value: 20, color: '#eab308' },
-    { name: 'Anger', value: 15, color: '#dc2626' },
-    { name: 'Burnout', value: 5, color: '#7c2d12' }
-  ];
+interface InsightsDashboardProps {
+  stats?: Stats;
+  loading?: boolean;
+}
 
-  const insights = [
-    "You're happiest on days you exercise 🏃‍♀️",
-    "Gratitude journaling improves your mood by 23% 📝",
-    "Your stress levels are lowest on weekends 🌅",
-    "Meditation helps reduce overthinking significantly 🧘‍♀️"
-  ];
+const InsightsDashboard = ({ stats, loading }: InsightsDashboardProps) => {
+  const { data: session } = useSession();
+  const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  const [moodDetractors, setMoodDetractors] = useState<any[]>([]);
+  const [insights, setInsights] = useState<string[]>([]);
+  const [weeklyChange, setWeeklyChange] = useState<number>(0);
+  const [wellnessCompletion, setWellnessCompletion] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchInsightsData = async () => {
+      if (!session?.user?.email) return;
+
+      try {
+        // Fetch weekly happiness data
+        const weeklyResponse = await fetch('/api/happiness/weekly');
+        if (weeklyResponse.ok) {
+          const weeklyData = await weeklyResponse.json();
+          setWeeklyData(weeklyData);
+          
+          // Calculate weekly change
+          if (weeklyData.length >= 2) {
+            const currentWeek = weeklyData.slice(-7);
+            const previousWeek = weeklyData.slice(-14, -7);
+            
+            const currentAvg = currentWeek.reduce((sum: number, day: any) => sum + day.score, 0) / currentWeek.length;
+            const previousAvg = previousWeek.reduce((sum: number, day: any) => sum + day.score, 0) / previousWeek.length;
+            
+            setWeeklyChange(currentAvg - previousAvg);
+          }
+        }
+
+        // Fetch mood detractors data
+        const detractorsResponse = await fetch('/api/happiness/detractors');
+        if (detractorsResponse.ok) {
+          const detractorsData = await detractorsResponse.json();
+          setMoodDetractors(detractorsData);
+        }
+
+        // Fetch wellness completion data
+        const wellnessResponse = await fetch('/api/wellness/completion');
+        if (wellnessResponse.ok) {
+          const wellnessData = await wellnessResponse.json();
+          setWellnessCompletion(wellnessData.completionPercentage);
+        }
+
+        // Generate insights based on the data
+        const insightsResponse = await fetch('/api/happiness/insights');
+        if (insightsResponse.ok) {
+          const insightsData = await insightsResponse.json();
+          setInsights(insightsData);
+        }
+      } catch (error) {
+        console.error('Error fetching insights data:', error);
+      }
+    };
+
+    fetchInsightsData();
+  }, [session?.user?.email]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-700"></div>
+      </div>
+    );
+  }
 
   const weeklyStats = {
-    avgHappiness: 7.7,
-    gratitudeStreak: 12,
-    wellnessCompletion: 78,
-    improvedAreas: ['Sleep', 'Exercise', 'Hydration']
+    avgHappiness: stats?.averageHappinessScore || 0,
+    gratitudeStreak: stats?.totalEntries || 0,
+    wellnessCompletion: wellnessCompletion,
+    improvedAreas: ['Sleep', 'Exercise', 'Hydration'] // This would need to be calculated from data
+  };
+
+  const getWeeklyChangeText = (change: number) => {
+    if (change === 0) return 'No change this week';
+    if (change > 0) return `+${change.toFixed(1)} this week`;
+    return `${change.toFixed(1)} this week`;
   };
 
   return (
@@ -53,9 +125,11 @@ const InsightsDashboard = () => {
         <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-50">
           <CardContent className="p-6 text-center">
             <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-700">{weeklyStats.avgHappiness}</div>
+            <div className="text-2xl font-bold text-green-700">{weeklyStats.avgHappiness.toFixed(1)}</div>
             <p className="text-sm text-green-600">Avg Happiness</p>
-            <Badge className="mt-2 bg-green-100 text-green-800">+0.5 this week</Badge>
+            <Badge className="mt-2 bg-green-100 text-green-800">
+              {weeklyStats.avgHappiness > 0 ? getWeeklyChangeText(weeklyChange) : 'Start tracking!'}
+            </Badge>
           </CardContent>
         </Card>
 
@@ -63,8 +137,10 @@ const InsightsDashboard = () => {
           <CardContent className="p-6 text-center">
             <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold text-blue-700">{weeklyStats.gratitudeStreak}</div>
-            <p className="text-sm text-blue-600">Day Gratitude Streak</p>
-            <Badge className="mt-2 bg-blue-100 text-blue-800">Keep going!</Badge>
+            <p className="text-sm text-blue-600">Day Streak</p>
+            <Badge className="mt-2 bg-blue-100 text-blue-800">
+              {weeklyStats.gratitudeStreak > 0 ? 'Keep going!' : 'Start today!'}
+            </Badge>
           </CardContent>
         </Card>
 
@@ -88,7 +164,7 @@ const InsightsDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Happiness Trend */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
@@ -99,14 +175,21 @@ const InsightsDashboard = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={happinessData}>
+              <LineChart data={weeklyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="day" />
+                <XAxis 
+                  dataKey="date" 
+                  tickFormatter={(date) => format(new Date(date), 'd MMM')}
+                  stroke="#64748b"
+                />
                 <YAxis domain={[0, 10]} />
-                <Tooltip />
+                <Tooltip 
+                  labelFormatter={(date) => format(new Date(date), 'EEEE, d MMM yyyy')}
+                  formatter={(value: number) => [`${value}/10`, 'Happiness']}
+                />
                 <Line 
                   type="monotone" 
-                  dataKey="happiness" 
+                  dataKey="score" 
                   stroke="#6366f1" 
                   strokeWidth={3}
                   dot={{ fill: '#6366f1', strokeWidth: 2, r: 6 }}
@@ -128,7 +211,7 @@ const InsightsDashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie
-                  data={moodDetractorsData}
+                  data={moodDetractors}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -136,7 +219,7 @@ const InsightsDashboard = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {moodDetractorsData.map((entry, index) => (
+                  {moodDetractors.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -144,7 +227,7 @@ const InsightsDashboard = () => {
               </RechartsPieChart>
             </ResponsiveContainer>
             <div className="flex flex-wrap gap-2 mt-4">
-              {moodDetractorsData.map((item) => (
+              {moodDetractors.map((item) => (
                 <Badge key={item.name} variant="outline" className="flex items-center gap-1">
                   <div 
                     className="w-3 h-3 rounded-full" 
@@ -157,27 +240,6 @@ const InsightsDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Wellness Completion */}
-      <Card className="border-0 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-green-600" />
-            Weekly Wellness Completion
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={happinessData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="day" />
-              <YAxis domain={[0, 10]} />
-              <Tooltip />
-              <Bar dataKey="wellness" fill="#10b981" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
 
       {/* AI Insights */}
       <Card className="border-0 shadow-lg bg-gradient-to-br from-indigo-50 to-purple-50">

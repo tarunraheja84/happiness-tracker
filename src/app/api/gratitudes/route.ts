@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/db';
 import { Gratitude } from '@/models/Gratitude';
+import { authOptions } from '@/lib/auth';
 
 // GET /api/gratitudes - Get all gratitudes for the user
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     console.log('Session in GET:', session); // Debug log
 
     if (!session?.user?.email) {
@@ -29,7 +30,7 @@ export async function GET() {
 // POST /api/gratitudes - Save new gratitudes
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     console.log('Session in POST:', session); // Debug log
 
     if (!session?.user?.email) {
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
 // DELETE /api/gratitudes - Delete gratitudes for a specific date
 export async function DELETE(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     const email = session?.user?.email;
 
     if (!email) {

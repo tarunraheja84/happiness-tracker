@@ -1,12 +1,14 @@
+'use client';
 
-import { useState } from 'react';
-import { AlertTriangle, Brain, Zap, Flame, Frown, Battery, Save } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useMoodDetractors } from '@/hooks/useMoodDetractors';
+import { AlertTriangle, Brain, Zap, Flame, Frown, Battery, Save, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface MoodDetractor {
   id: string;
@@ -17,16 +19,38 @@ interface MoodDetractor {
   notes: string;
 }
 
-const MoodDetractors = () => {
-  const [detractors, setDetractors] = useState<MoodDetractor[]>([
-    { id: 'overthinking', label: 'Overthinking', icon: Brain, selected: false, severity: [3], notes: '' },
-    { id: 'stress', label: 'Stress', icon: Zap, selected: false, severity: [3], notes: '' },
-    { id: 'anger', label: 'Anger', icon: Flame, selected: false, severity: [3], notes: '' },
-    { id: 'anxiety', label: 'Anxiety', icon: Frown, selected: false, severity: [3], notes: '' },
-    { id: 'burnout', label: 'Burnout', icon: Battery, selected: false, severity: [3], notes: '' }
-  ]);
+interface MoodDetractorsProps {
+  entries?: any[];
+  loading?: boolean;
+}
 
-  const { toast } = useToast();
+const defaultDetractors: MoodDetractor[] = [
+  { id: 'overthinking', label: 'Overthinking', icon: Brain, selected: false, severity: [3], notes: '' },
+  { id: 'stress', label: 'Stress', icon: Zap, selected: false, severity: [3], notes: '' },
+  { id: 'anger', label: 'Anger', icon: Flame, selected: false, severity: [3], notes: '' },
+  { id: 'anxiety', label: 'Anxiety', icon: Frown, selected: false, severity: [3], notes: '' },
+  { id: 'burnout', label: 'Burnout', icon: Battery, selected: false, severity: [3], notes: '' }
+];
+
+export default function MoodDetractors({ entries, loading: entriesLoading }: MoodDetractorsProps) {
+  const { moodDetractors, loading: moodDetractorsLoading, error, saveMoodDetractors } = useMoodDetractors();
+  const [detractors, setDetractors] = useState<MoodDetractor[]>(defaultDetractors);
+  const [saving, setSaving] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  useEffect(() => {
+    if (moodDetractors.length > 0 && !isDataLoaded) {
+      setDetractors(prevDetractors => 
+        prevDetractors.map(detractor => ({
+          ...detractor,
+          selected: moodDetractors.some((md: any) => md.id === detractor.id),
+          severity: [moodDetractors.find((md: any) => md.id === detractor.id)?.severity || 3],
+          notes: moodDetractors.find((md: any) => md.id === detractor.id)?.notes || ''
+        }))
+      );
+      setIsDataLoaded(true);
+    }
+  }, [moodDetractors, isDataLoaded]);
 
   const toggleDetractor = (id: string) => {
     setDetractors(items =>
@@ -52,26 +76,52 @@ const MoodDetractors = () => {
     );
   };
 
-  const handleSave = () => {
-    const selectedDetractors = detractors.filter(d => d.selected);
-    console.log('Saving mood detractors:', selectedDetractors);
-    
-    toast({
-      title: "Mood detractors saved",
-      description: "Your mood tracking has been saved successfully.",
-    });
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const selectedDetractors = detractors
+        .filter(d => d.selected)
+        .map(d => ({
+          id: d.id,
+          label: d.label,
+          severity: d.severity[0],
+          notes: d.notes
+        }));
+
+      console.log('Saving mood detractors:', selectedDetractors);
+      const response = await saveMoodDetractors(selectedDetractors);
+      console.log('Save response:', response);
+      
+      if (response) {
+        toast.success('Mood detractors saved successfully');
+      } else {
+        throw new Error('No response from server');
+      }
+    } catch (error) {
+      console.error('Error saving mood detractors:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to save mood detractors');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (error) {
+    return (
+      <div className="text-red-500 p-4">
+        Error: {error}
+      </div>
+    );
+  }
 
   const selectedDetractors = detractors.filter(d => d.selected);
 
   return (
-    <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50 md:col-span-2">
-      <CardHeader className="pb-4">
+    <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-red-50">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2 text-orange-700">
           <AlertTriangle className="h-5 w-5" />
           Mood Detractors
         </CardTitle>
-        <p className="text-sm text-orange-600">What affected your mood today?</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -94,7 +144,6 @@ const MoodDetractors = () => {
 
         {selectedDetractors.length > 0 && (
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-orange-700">Severity & Notes:</h4>
             {selectedDetractors.map((detractor) => (
               <div key={detractor.id} className="p-4 bg-white/70 rounded-lg space-y-3">
                 <div className="flex items-center gap-2">
@@ -133,19 +182,27 @@ const MoodDetractors = () => {
                 />
               </div>
             ))}
-            
-            <Button 
-              onClick={handleSave}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save Mood Detractors
-            </Button>
           </div>
         )}
+
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+        >
+          {saving ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Saving...</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-2">
+              <Save className="h-4 w-4" />
+              Save Mood Detractors
+            </div>
+          )}
+        </Button>
       </CardContent>
     </Card>
   );
-};
-
-export default MoodDetractors;
+}
