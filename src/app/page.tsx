@@ -111,7 +111,7 @@ export default function Home() {
         <div className="space-y-8">
           {activeView === 'today' && (
             <div className="grid gap-8 md:grid-cols-2">
-              <GratitudeJournal entries={entries} loading={entriesLoading} />
+              <GratitudeJournal />
               <WellnessChecklist onProgressUpdate={setTodayProgress} />
               <HappinessReflection entries={entries} loading={entriesLoading} />
               <MoodDetractors entries={entries} loading={entriesLoading} />
