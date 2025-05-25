@@ -26,7 +26,7 @@ export async function GET() {
     let totalDetractors = 0;
 
     happinessData.forEach(entry => {
-      entry.moodDetractors.forEach(detractor => {
+      entry.moodDetractors.forEach((detractor:any) => {
         const count = detractorsCount.get(detractor.label) || 0;
         detractorsCount.set(detractor.label, count + 1);
         totalDetractors++;
